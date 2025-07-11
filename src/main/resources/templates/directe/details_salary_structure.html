@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Salaires</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container mt-5">
+        <h2>Composants de la Structure: <span th:text="${structure.name}"></span></h2>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <table class="table table-striped mt-4">
+            <thead>
+            <tr>
+                <th>Composant</th>
+                <th>Montant</th>
+                <th>Basé sur Formule</th>
+                <th>Formule</th>
+                <th>Condition</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="component : ${structure.components}">
+                <td th:text="${component.salary_component}"></td>
+                <td th:text="${component.amount}"></td>
+                <td th:text="${component.amount_based_on_formula} ? 'Oui' : 'Non'"></td>
+                <td th:text="${component.formula}"></td>
+                <td th:text="${component.condition}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/salary-structures}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

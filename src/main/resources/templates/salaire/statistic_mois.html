@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Salaires par Mois</title>
+    <style>
+        .component-table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .component-table th, .component-table td {
+            padding: 0.25rem;
+            border: none;
+        }
+        .component-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<div class="main-content">
+    <div class="container mt-4">
+        <h2>Salaires par Mois</h2>
+
+        <form method="get" th:action="@{/salaire/salaires-mensuels}" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label class="form-label">Année</label>
+                <input type="text" name="annee" class="form-control" th:value="${currentYear}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                <tr>
+                    <th>Mois</th>
+                    <th>Nombre Employés</th>
+                    <th>Gains</th>
+                    <th>Composants des Gains</th>
+                    <th>Déductions</th>
+                    <th>Composants des Déductions</th>
+                    <th>Net Pay</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="monthData : ${monthsData}">
+                    <td th:text="${monthData.month}"></td>
+                    <td th:text="${monthData.employee_count}"></td>
+                    <td th:text="${#numbers.formatDecimal(monthData.total_earnings, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+
+                    <!-- Colonne des composants de gains -->
+                    <td>
+                        <table class="component-table">
+                            <tr th:each="earn : ${monthData.earnings_components}">
+                                <td th:text="${earn.key}"></td>
+                                <td th:text="${#numbers.formatDecimal(earn.value, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            <tr class="component-header">
+                                <td>Total Gains</td>
+                                <td th:text="${#numbers.formatDecimal(monthData.total_earnings, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td th:text="${#numbers.formatDecimal(monthData.total_deductions, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+
+                    <!-- Colonne des composants de déductions -->
+                    <td>
+                        <table class="component-table">
+                            <tr th:each="deduct : ${monthData.deductions_components}">
+                                <td th:text="${deduct.key}"></td>
+                                <td th:text="${#numbers.formatDecimal(deduct.value, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            <tr class="component-header">
+                                <td>Total Déductions</td>
+                                <td th:text="${#numbers.formatDecimal(monthData.total_deductions, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td>
+                        <a th:href="@{/salaire/salaires-mensuels-employe(
+                               annee=${#strings.substring(monthData.month, 0, 4)},
+                               mois=${#strings.substring(monthData.month, 5, 7)}
+                             )}" >
+                            <span th:text="${#numbers.formatDecimal(monthData.total_net_pay, 1, 'COMMA', 2, 'POINT')} + 'USD'"></span>
+                        </a>
+                    </td>
+
+                </tr>
+
+                <!-- Ligne des totaux globaux -->
+                <tr class="table-info">
+                    <td colspan="2" class="text-end"><strong>Total général</strong></td>
+                    <td></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalGlobalEarnings, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                    <td></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalGlobalDeductions, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalNetPays, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

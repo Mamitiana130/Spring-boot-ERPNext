@@ -1,0 +1,5 @@
+name_salaire,type,description,montant
+SAL-EMP-00001,Deduction,Transport,200.00
+SAL-EMP-00002,Prime,Rendement,300.00
+SAL-EMP-00001,Deduction,Absence,-100.00
+"fields=[\"name\", \"employee_name\", \"gender\", \"date_of_birth\", \"status\", \"department\", \"designation\"]";

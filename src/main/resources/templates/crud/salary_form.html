@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${isEdit != null and isEdit} ? 'Modification de Bulletin de Salaire' : 'Création de Bulletin de Salaire'"></title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <h4 th:text="${isEdit != null and isEdit} ? 'Modifier le Bulletin de Salaire' : 'Nouveaux Bulletins de Salaire'"></h4>
+            </div>
+
+            <div class="card-body">
+                <div th:if="${success}" class="alert alert-success" role="alert">
+                    <span th:text="${success}"></span>
+                    <span th:if="${slipName}">Référence: <strong th:text="${slipName}"></strong></span>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <span th:text="${error}"></span>
+                </div>
+
+                <form th:action="${isEdit != null and isEdit} ? @{/crud-salaire/update(assignId=${assignId})} : @{/crud-salaire/creer}" method="post">                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="employee" class="form-label">Employé</label>
+                            <select class="form-select" id="employee" name="employee" required>
+                                <option value="">Sélectionner un employé</option>
+                                <option th:each="emp : ${employees}"
+                                        th:value="${emp['name'] + '|' + emp['employee_name']}"
+                                        th:text="${emp['employee_name'] + ' (' + emp['name'] + ')'}"
+                                        th:selected="${isEdit != null and isEdit and salaryAssignment != null and salaryAssignment['employee'] == emp['name']}">
+                                </option>
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="baseAmount" class="form-label">Salaire de Base</label>
+                            <input type="number" step="0.01" class="form-control" id="baseAmount"
+                                   name="baseAmount"
+                                   th:value="${isEdit != null and isEdit and salaryAssignment != null} ? ${salaryAssignment['base']} : ''">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="startDate" class="form-label">Date de Début</label>
+                            <input type="date" class="form-control" id="startDate"
+                                   name="startDate"
+                                   th:value="${isEdit != null and isEdit and salaryAssignment != null} ? ${#strings.substring(salaryAssignment['from_date'], 0, 10)} : ${today}"
+                                   required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="endDate" class="form-label">Date de Fin</label>
+                            <input type="date" class="form-control" id="endDate"
+                                   name="endDate"
+                                   th:value="${isEdit != null and isEdit and salaryAssignment != null} ? ${#strings.substring(salaryAssignment['to_date'], 0, 10)} : ''">
+                        </div>
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="salaireEcraser" class="form-label">Ecraser salaire</label>
+                            <input type="checkbox" step="0.01"  id="salaireEcraser"
+                                   name="salaireEcraser">
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label for="salaireMoyenne" class="form-label">Salaire Moyenne</label>
+                            <input type="checkbox" step="0.01"  id="salaireMoyenne"
+                                   name="salaireMoyenne">
+                        </div>
+
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary"
+                                th:text="${isEdit != null and isEdit} ? 'Mettre à jour' : 'Créer le Bulletin'">
+                        </button>
+                        <a th:href="@{/crud-salaire}" class="btn btn-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        // Calcul automatique de la date de fin (1 mois après la date de début)-->
+<!--        const startDateInput = document.getElementById('startDate');-->
+<!--        const endDateInput = document.getElementById('endDate');-->
+
+<!--        startDateInput.addEventListener('change', function() {-->
+<!--            if (this.value) {-->
+<!--                const startDate = new Date(this.value);-->
+<!--                const endDate = new Date(startDate);-->
+<!--                endDate.setMonth(endDate.getMonth() + 1);-->
+<!--                endDate.setDate(endDate.getDate() - 1);-->
+
+<!--                const formattedEndDate = endDate.toISOString().split('T')[0];-->
+<!--                endDateInput.value = formattedEndDate;-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+</body>
+</html>

@@ -1,0 +1,3 @@
+first_name,employee_name,employee_number,date_of_birth,date_of_joining,gender,company,department,designation,employment_type,status
+Jean,Jean Dupont,E001,12/03/1985,01/01/2022,Male,CompanyTest,IT - C,Développeur,CDI,Active
+Marie,Marie Curie,E002,23/07/1990,15/04/2023,Female,CompanyTest,IT - C,Développeur,CDD,Active

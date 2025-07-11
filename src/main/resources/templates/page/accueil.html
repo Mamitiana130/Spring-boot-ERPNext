@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <h1>Accueil</h1>
+    <div class="card mt-4">
+        <div class="card-body">
+            Bienvenue dans votre espace de gestion d'employée et de salaire.
+        </div>
+    </div>
+    <span>
+        <a class="" th:href="@{/crud-salaire/recherche}">Liste des Salaires</a>
+    </span>
+<!--    <span>-->
+<!--        <a class="" th:href="@{/crud-salaire/list-salary-assignment}">Liste des Salaires Assigné</a>-->
+<!--    </span>-->
+
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

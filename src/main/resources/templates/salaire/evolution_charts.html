@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Évolution des salaires</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .filter-container {
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<div class="main-content">
+
+<div class="filter-container">
+    <form method="get" th:action="@{/salaire/evolution-salaires}">
+        <label for="annee">Année :</label>
+        <input type="text" id="annee" name="annee" th:value="${currentYear}" placeholder="YYYY">
+        <button type="submit">Filtrer</button>
+    </form>
+</div>
+
+<div class="chart-container">
+    <h2>Évolution du total des salaires nets par mois</h2>
+    <canvas id="netPayChart"></canvas>
+</div>
+
+<div class="chart-container">
+    <h2>Évolution des composantes de revenus par mois</h2>
+    <canvas id="earningsChart"></canvas>
+</div>
+
+<div class="chart-container">
+    <h2>Évolution des déductions par mois</h2>
+    <canvas id="deductionsChart"></canvas>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const monthlyData = /*[[${monthlyData}]]*/ [];
+
+    // Préparer les données pour les graphiques
+    const months = monthlyData.map(item => item.month);
+    const netPays = monthlyData.map(item => item.total_net_pay);
+
+    // Extraire les composantes de revenus uniques
+    const earningsComponents = new Set();
+    monthlyData.forEach(month => {
+        Object.keys(month.earnings_components || {}).forEach(comp => {
+            earningsComponents.add(comp);
+        });
+    });
+
+    // Extraire les composantes de déductions uniques
+    const deductionsComponents = new Set();
+    monthlyData.forEach(month => {
+        Object.keys(month.deductions_components || {}).forEach(comp => {
+            deductionsComponents.add(comp);
+        });
+    });
+
+    // Créer le graphique des salaires nets
+    new Chart(
+        document.getElementById('netPayChart'),
+        {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Total des salaires nets',
+                    data: netPays,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        }
+    );
+
+    // Créer le graphique des revenus
+    const earningsChart = new Chart(
+        document.getElementById('earningsChart'),
+        {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: Array.from(earningsComponents).map((component, index) => {
+                    const color = `hsl(${index * 360 / earningsComponents.size}, 70%, 50%)`;
+                    return {
+                        label: component,
+                        data: monthlyData.map(month => month.earnings_components[component] || 0),
+                        borderColor: color,
+                        backgroundColor: color,
+                        tension: 0.1
+                    };
+                })
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        stacked: false
+                    }
+                }
+            }
+        }
+    );
+
+    // Créer le graphique des déductions
+    const deductionsChart = new Chart(
+        document.getElementById('deductionsChart'),
+        {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: Array.from(deductionsComponents).map((component, index) => {
+                    const color = `hsl(${index * 360 / deductionsComponents.size}, 70%, 50%)`;
+                    return {
+                        label: component,
+                        data: monthlyData.map(month => month.deductions_components[component] || 0),
+                        borderColor: color,
+                        backgroundColor: color,
+                        tension: 0.1
+                    };
+                })
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        stacked: false
+                    }
+                }
+            }
+        }
+    );
+    /*]]>*/
+</script>
+</div>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

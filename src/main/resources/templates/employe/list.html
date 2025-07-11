@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Employés</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container-fluid mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>Liste des Employés</h4>
+                <span class="badge bg-primary fs-6">
+                    Total: <span th:text="${#lists.size(employes)}">0</span> employé(s)
+                </span>
+            </div>
+            <div class="card-body">
+                <!-- Formulaire de filtrage -->
+                <form th:action="@{/employe}" method="get" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="fromBirthDate" class="form-label">Date de naissance (début)</label>
+                            <input type="date" id="fromBirthDate" name="fromBirthDate" class="form-control"
+                                   th:value="${currentFilters.fromBirthDate}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="toBirthDate" class="form-label">Date de naissance (fin)</label>
+                            <input type="date" id="toBirthDate" name="toBirthDate" class="form-control"
+                                   th:value="${currentFilters.toBirthDate}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Statut</label>
+                            <select id="status" name="status" class="form-select" th:value="${currentFilters.status}">
+                                <option value="">Tous</option>
+                                <option value="Active">Actif</option>
+                                <option value="Inactive">Inactif</option>
+                                <option value="Suspended">Suspendue</option>
+                                <option value="Left">Mise a part</option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="gender" class="form-label">Genre</label>
+                            <select id="gender" name="gender" class="form-select" th:value="${currentFilters.gender}">
+                                <option value="">Tous</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Autre</option>
+                                <option value="Genderqueer">Gender queer</option>
+                                <option value="Non-Confirming">Pas confirmé</option>
+                                <option value="Prefer Not To Say">Ne pas preciser</option>
+                                <option value="Transgender">Transgenre</option>
+
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">Filtrer</button>
+                                <a th:href="@{/employe}" class="btn btn-secondary">Réinitialiser</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Tableau des employés -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Genre</th>
+                            <th>Date de naissance</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="employe : ${employes}">
+                            <td th:text="${employe['name']}"></td>
+                            <td th:text="${employe.employee_name}"></td>
+                            <td th:text="${employe.gender} ?: 'N/A'"></td>
+                            <td th:text="${employe.date_of_birth} ? ${#strings.substring(employe.date_of_birth, 0, 10)} : 'N/A'"></td>
+                            <td th:text="${employe.status} ?: 'N/A'"></td>
+
+                            <!--                            <td>-->
+<!--                                <span th:text="${employe.status} ?: 'N/A'"-->
+<!--                                      th:class="${'badge ' + (employe.status == 'Active' ? 'bg-success' : 'bg-danger')}">-->
+<!--                                </span>-->
+<!--                            </td>-->
+                            <td>
+                                <a th:href="@{/employe/{id}(id=${employe.name})}"
+                                   class="btn btn-primary me-2">Détails</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+
+</body>
+</html>

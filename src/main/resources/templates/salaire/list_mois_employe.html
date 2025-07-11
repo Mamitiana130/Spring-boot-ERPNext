@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Salaires des Employés</title>
+
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<div class="main-content">
+
+    <div class="container mt-4">
+        <h2>Salaires des Employés</h2>
+
+        <form method="get" th:action="@{/salaire/salaires-mensuels-employe}" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label class="form-label">Mois</label>
+                <select class="form-select" name="mois" th:value="${currentFilters.mois}">
+                    <option value="">Tous</option>
+                    <option value="01">Janvier</option>
+                    <option value="02">Février</option>
+                    <option value="03">Mars</option>
+                    <option value="04">Avril</option>
+                    <option value="05">Mai</option>
+                    <option value="06">Juin</option>
+                    <option value="07">Juillet</option>
+                    <option value="08">Août</option>
+                    <option value="09">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Année</label>
+                <input type="text" name="annee" class="form-control" th:value="${currentFilters.annee}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Employé</th>
+                    <th>Nom Employé</th>
+                    <th>Période</th>
+                    <th>Net Pay</th>
+                    <th>Gains (Earnings)</th>
+                    <th>Déductions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="slip : ${slips}">
+                    <td th:text="${slip.employee}"></td>
+                    <td th:text="${slip.employee_name}"></td>
+                    <td th:text="${slip.start_date} + ' - ' + ${slip.end_date}"></td>
+                    <td class="currency" th:text="${#numbers.formatDecimal(slip.net_pay, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+
+                    <!-- Earnings -->
+                    <td>
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Montant</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="earn : ${slip.earnings}">
+                                <td th:text="${earn.salary_component}"></td>
+                                <td class="currency" th:text="${#numbers.formatDecimal(earn.amount, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            <tr class="table-light">
+                                <td><strong>Total</strong></td>
+                                <td class="currency" th:text="${#numbers.formatDecimal(slip.total_earnings_components, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+
+                    <!-- Deductions -->
+                    <td>
+                        <table class="table table-sm">
+                            <thead>
+                            <tr><th>Type</th><th>Montant</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="deduct : ${slip.deductions}">
+                                <td th:text="${deduct.salary_component}"></td>
+                                <td class="currency" th:text="${#numbers.formatDecimal(deduct.amount, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            <tr class="table-light">
+                                <td><strong>Total</strong></td>
+                                <td class="currency" th:text="${#numbers.formatDecimal(slip.total_deductions_components, 1, 'COMMA', 2, 'POINT')} + ' USD'"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <!-- Totaux globaux -->
+                <tr class="table-info">
+                    <td colspan="3" class="text-end"><strong>Total général</strong></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalNetPays, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalGlobalEarnings, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                    <td class="currency"><strong th:text="${#numbers.formatDecimal(totalGlobalDeductions, 1, 'COMMA', 2, 'POINT')} + ' USD'"></strong></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

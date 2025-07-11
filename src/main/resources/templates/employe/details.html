@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Employé</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4>Fiche Employé: <span th:text="${employee['employee_name']}"></span></h4>
+                    <a th:href="@{/employe}" class="btn btn-secondary">Retour</a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Informations Personnelles</h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>ID Employé</th>
+                                <td th:text="${employee['name']}"></td>
+                            </tr>
+                            <tr>
+                                <th>Nom Complet</th>
+                                <td th:text="${employee['employee_name']}"></td>
+                            </tr>
+                            <tr>
+                                <th>Genre</th>
+                                <td th:text="${employee['gender']} ?: 'N/A'"></td>
+                            </tr>
+                            <tr>
+                                <th>Date de Naissance</th>
+                                <td th:text="${employee['date_of_birth']} != null ? ${#strings.substring(employee['date_of_birth'], 0, 10)} : 'N/A'"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Informations Professionnelles</h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Statut</th>
+                                <td th:text="${employee['status']} ?: 'N/A'"></td>
+                            </tr>
+                            <tr>
+                                <th>Département</th>
+                                <td th:text="${employee['department']} ?: 'N/A'"></td>
+                            </tr>
+                            <tr>
+                                <th>Poste</th>
+                                <td th:text="${employee['designation']} ?: 'N/A'"></td>
+                            </tr>
+                            <tr>
+                                <th>Date d'embauche</th>
+                                <td th:text="${employee['date_of_joining']} != null ? ${#strings.substring(employee['date_of_joining'], 0, 10)} : 'N/A'"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <h5 class="mb-3">Historique des Salaires</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Date de Versement</th>
+                            <th>Salaire Brut</th>
+                            <th>Salaire Net</th>
+                            <th>Structure Salaire</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="salaire : ${salaires}">
+                            <td th:text="${salaire['posting_date']} != null ? ${#strings.substring(salaire['posting_date'], 0, 10)} : 'N/A'"></td>
+                            <td th:text="${#numbers.formatDecimal(salaire['gross_pay'], 1, 2, 'COMMA')} + ' USD'"></td>
+                            <td th:text="${#numbers.formatDecimal(salaire['net_pay'], 1, 2, 'COMMA')} + ' USD'"></td>
+                            <td th:text="${salaire['salary_structure']} ?: 'N/A'"></td>
+                            <td>
+                                <form th:action="@{/export/salaire-detail}" method="get" style="display: inline;">
+                                    <input type="hidden" name="id" th:value="${salaire['name']}">
+                                    <button type="submit" class="btn btn-primary me-2">Export PDF</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${salaires.isEmpty()}">
+                            <td colspan="5" class="text-center">Aucun salaire enregistré</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Salaires</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4>Gestion des Salaires</h4>
+                    <a th:href="@{/crud-salaire/nouveau}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Créer un nouveau salaire
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Employé</th>
+                            <th>Date</th>
+                            <th>Salaire Net</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="assign : ${assigns}">
+                            <td th:text="${assign['employee_name']}"></td>
+                            <td>
+                                <span th:text="${#strings.substring(assign['from_date'], 0, 10)}"></span>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(assign['base'], 1, 2, 'COMMA')} + ' USD'"></td>
+                            <td>
+                                <a th:href="@{/crud-salaire/edit(id=${assign.name})}"
+                                   class="btn btn-sm btn-warning me-2">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                              
+                            </td>
+                        </tr>
+                        <tr th:if="${assigns.isEmpty()}">
+                            <td colspan="5" class="text-center">Aucun salaire enregistré</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

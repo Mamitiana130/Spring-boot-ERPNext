@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Salaires</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <form method="get" th:action="@{/crud-salaire/salaires-employe-recherche}" class="row g-3 mb-4">
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+                            <label for="condition" class="form-label">Condition</label>
+                            <select class="form-select" id="condition" name="condition">
+                                <option value="">Tous</option>
+                                <option value="=">=</option>
+                                <option value="<"><</option>
+                                <option value=">">></option>
+                                <option value="<="><=</option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Montant condition</label>
+                            <input type="number" name="montant" class="form-control">
+                        </div>
+
+                    </div>
+                    <div class="row mb-3">
+                        <label for="component" class="form-label">Component</label>
+                        <select class="form-select" id="component" name="component" required>
+                            <option value="">Sélectionner un Component</option>
+                            <option th:each="salaryComponent : ${salaryComponents}"
+                                    th:value="${salaryComponent['name']}"
+                                    th:text="${salaryComponent['name']}">
+                            </option>
+                        </select>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Employé</th>
+                            <th>Période</th>
+                            <th>Salaire Net</th>
+                            <th>Date de versement</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="slip : ${slips}">
+                            <td th:text="${slip['employee_name']}"></td>
+                            <td>
+                                <span th:text="${#strings.substring(slip['start_date'], 0, 10)}"></span> -
+                                <span th:text="${#strings.substring(slip['end_date'], 0, 10)}"></span>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(slip['net_pay'], 1, 2, 'COMMA')} + ' USD'"></td>
+                            <td th:text="${#strings.substring(slip['posting_date'], 0, 10)}"></td>
+
+                        </tr>
+                        <tr th:if="${slips.isEmpty()}">
+                            <td colspan="5" class="text-center">Aucun salaire enregistré</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

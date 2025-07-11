@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Évolution des salaires</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 90%;
+            margin: 20px auto;
+        }
+        .filter-container {
+            margin: 20px;
+            text-align: center;
+        }
+        .chart-wrapper {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+<div class="main-content">
+
+    <div class="filter-container">
+        <form method="get" th:action="@{/salaire/evolution-salaires}">
+            <label for="annee">Année :</label>
+            <input type="text" id="annee" name="annee" th:value="${currentYear}" placeholder="YYYY">
+            <button type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="chart-container">
+        <h2>Évolution complète des salaires</h2>
+        <div class="chart-wrapper">
+            <canvas id="combinedChart"></canvas>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const monthlyData = /*[[${monthlyData}]]*/ [];
+
+        // Préparer les données
+        const months = monthlyData.map(item => item.month);
+        const netPays = monthlyData.map(item => item.total_net_pay);
+        const totalEarnings = monthlyData.map(item => item.total_earnings || 0);
+        const totalDeductions = monthlyData.map(item => item.total_deductions || 0);
+
+        // Extraire toutes les composantes
+        const allComponents = {
+            earnings: new Set(),
+            deductions: new Set()
+        };
+
+        monthlyData.forEach(month => {
+            Object.keys(month.earnings_components || {}).forEach(comp => {
+                allComponents.earnings.add(comp);
+            });
+            Object.keys(month.deductions_components || {}).forEach(comp => {
+                allComponents.deductions.add(comp);
+            });
+        });
+
+        // Créer les datasets
+        const datasets = [
+            {
+                label: 'Total Net',
+                data: netPays,
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderWidth: 3,
+                type: 'line',
+                yAxisID: 'y',
+                order: 1
+            },
+            {
+                label: 'Total Revenus',
+                data: totalEarnings,
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderWidth: 2,
+                type: 'bar',
+                yAxisID: 'y',
+                order: 2
+            },
+            {
+                label: 'Total Déductions',
+                data: totalDeductions,
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderWidth: 2,
+                type: 'bar',
+                yAxisID: 'y',
+                order: 2
+            }
+        ];
+
+        // Ajouter les composantes de revenus
+        let earningsIndex = 0;
+        allComponents.earnings.forEach(component => {
+            const hue = earningsIndex * 360 / allComponents.earnings.size;
+            datasets.push({
+                label: component,
+                data: monthlyData.map(month => month.earnings_components[component] || 0),
+                borderColor: `hsl(${hue}, 80%, 60%)`,
+                backgroundColor: `hsla(${hue}, 80%, 60%, 0.2)`,
+                borderWidth: 1,
+                type: 'line',
+                hidden: true,
+                yAxisID: 'y',
+                order: 3
+            });
+            earningsIndex++;
+        });
+
+        // Ajouter les composantes de déductions
+        let deductionsIndex = 0;
+        allComponents.deductions.forEach(component => {
+            const hue = deductionsIndex * 360 / allComponents.deductions.size;
+            datasets.push({
+                label: component,
+                data: monthlyData.map(month => month.deductions_components[component] || 0),
+                borderColor: `hsl(${hue}, 80%, 40%)`,
+                backgroundColor: `hsla(${hue}, 80%, 40%, 0.2)`,
+                borderWidth: 1,
+                type: 'line',
+                hidden: true,
+                yAxisID: 'y',
+                order: 3
+            });
+            deductionsIndex++;
+        });
+
+        // Créer le graphique combiné
+        new Chart(
+            document.getElementById('combinedChart'),
+            {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Montant'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mois'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            }
+        );
+
+        /*]]>*/
+    </script>
+</div>
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

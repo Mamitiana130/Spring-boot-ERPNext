@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Réinitialisation des données</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Réinitialisation des données
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">
+                        Cette action va réinitialiser toutes les données de la base.
+                    </p>
+                    <a th:href="@{/reset/resetBase}" class="btn btn-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Réinitialiser
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${message}" class="alert alert-info mt-3" th:text="${message}"></div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Bootstrap Icons -->
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>

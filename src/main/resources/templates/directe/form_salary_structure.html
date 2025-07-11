@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Salaires</title>
+</head>
+<body>
+<div th:replace="~{fragments/header}"></div>
+
+<div class="main-content">
+    <div class="container mt-5">
+
+        <h2 th:text="${editMode} ? 'Modifier une Structure de Salaire' : 'Ajouter une Structure de Salaire'"></h2>
+
+        <form th:action="${editMode} ? @{/salary-structures/edit} : @{/salary-structures/add}" method="post">
+            <input type="hidden" name="name" th:value="${structure?.name}" th:if="${editMode}" />
+
+            <div class="mb-3" th:if="${!editMode}">
+                <label class="form-label">Nom (name)</label>
+                <input type="text" name="name" class="form-control"
+                       th:value="${structure?.name}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Entreprise (company)</label>
+                <input type="text" name="company" class="form-control"
+                       th:value="${structure?.company}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Devise (currency)</label>
+                <input type="text" name="currency" class="form-control"
+                       th:value="${structure?.currency}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Fréquence de paie (payroll_frequency)</label>
+                <select name="payroll_frequency" class="form-control" required>
+                    <option value="Monthly" th:selected="${structure?.payroll_frequency == 'Monthly'}">Mensuel</option>
+                    <option value="Bi-weekly" th:selected="${structure?.payroll_frequency == 'Bi-weekly'}">Bi-hebdomadaire</option>
+                    <option value="Weekly" th:selected="${structure?.payroll_frequency == 'Weekly'}">Hebdomadaire</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    th:text="${editMode} ? 'Mettre à jour' : 'Ajouter'"></button>
+            <a th:href="@{/salary-structures}" class="btn btn-secondary ms-2">Annuler</a>
+        </form>
+
+        <div th:if="${message}" class="alert alert-info mt-3" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer}"></div>
+</body>
+</html>
